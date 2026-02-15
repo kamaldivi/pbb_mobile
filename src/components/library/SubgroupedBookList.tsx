@@ -118,8 +118,8 @@ export const SubgroupedBookList: React.FC<SubgroupedBookListProps> = ({
         item.type === 'header' ? `header-${index}` : `book-${(item.data as Book).book_id}`
       }
       numColumns={NUM_COLUMNS}
-      estimatedItemSize={200}
       getItemType={getItemType}
+      // @ts-ignore - overrideItemLayout exists but has type issues in FlashList v2
       overrideItemLayout={overrideItemLayout}
       showsVerticalScrollIndicator={false}
     />

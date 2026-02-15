@@ -47,7 +47,7 @@ const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) => {
     );
   };
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
