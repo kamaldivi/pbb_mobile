@@ -159,15 +159,13 @@ const ReaderScreen: React.FC<ReaderScreenProps> = ({ route, navigation }) => {
 
   const handleShare = async () => {
     try {
-      // Generate deep link URL
-      const deepLink = `purebhaktibase://reader/${bookId}/${currentPage}`;
-      const webLink = `https://purebhaktibase.com/reader/${bookId}/${currentPage}`;
+      // Generate web link with query parameters
+      const webLink = `https://purebhaktibase.com/reader?book_id=${bookId}&page=${currentPage}`;
 
       const message = `Check out page ${currentPage} of "${bookTitle}" on Pure Bhakti Base!\n\n${webLink}`;
 
       const result = await Share.share({
         message,
-        url: deepLink, // iOS will use this
         title: `${bookTitle} - Page ${currentPage}`,
       });
 

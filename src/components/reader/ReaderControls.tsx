@@ -70,7 +70,10 @@ export const ReaderControls: React.FC<ReaderControlsProps> = ({
       </View>
 
       {/* Bottom navigation bar */}
-      <View style={styles.bottomBar}>
+      <View style={[
+        styles.bottomBar,
+        { paddingBottom: insets.bottom + spacing.md }
+      ]}>
         {/* Left side: TOC and Previous */}
         <View style={styles.bottomBarLeft}>
           <TouchableOpacity onPress={onOpenTOC} style={styles.tocButton}>
@@ -159,7 +162,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
+    paddingTop: spacing.md,
+    // paddingBottom is applied dynamically with safe area insets
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   bottomBarLeft: {
