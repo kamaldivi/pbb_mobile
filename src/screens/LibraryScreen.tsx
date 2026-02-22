@@ -31,7 +31,7 @@ const LibraryScreen: React.FC<LibraryScreenProps> = ({ navigation }) => {
     openBookDetails,
     closeBookDetails
   } = useLibraryStore();
-  const { refreshDownloadedBooks } = useOfflineStore();
+  const { refreshDownloadedBooks, downloadedBooks } = useOfflineStore();
   const isOnline = useNetworkStatus();
 
   // Initialize offline manager and refresh downloaded books
@@ -100,12 +100,100 @@ const LibraryScreen: React.FC<LibraryScreenProps> = ({ navigation }) => {
     }
   };
 
-  if (error) {
+  const handleViewDownloads = () => {
+    navigation.navigate('Downloads');
+  };
+
+  // When offline and API fails, show downloaded books instead
+  if (error && !isOnline) {
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>Failed to load books</Text>
-        <Text style={styles.errorSubtext}>Please check your connection</Text>
-      </View>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => setDrawerVisible(true)}
+            style={styles.menuButton}
+          >
+            <Ionicons name="menu" size={28} color={colors.text.primary} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Library</Text>
+          <View style={styles.networkStatus}>
+            <View style={styles.offlineBadge}>
+              <Ionicons name="cloud-offline" size={16} color={colors.text.inverse} />
+              <Text style={styles.offlineText}>Offline</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Offline Message */}
+        <View style={styles.offlineContainer}>
+          <Ionicons name="cloud-offline-outline" size={80} color={colors.text.tertiary} />
+          <Text style={styles.offlineTitle}>You're Offline</Text>
+          <Text style={styles.offlineMessage}>
+            The full library catalog is not available while offline.
+          </Text>
+
+          {downloadedBooks.length > 0 ? (
+            <>
+              <Text style={styles.offlineSubMessage}>
+                You have {downloadedBooks.length} book{downloadedBooks.length !== 1 ? 's' : ''} downloaded for offline reading.
+              </Text>
+              <TouchableOpacity
+                style={styles.viewDownloadsButton}
+                onPress={handleViewDownloads}
+              >
+                <Ionicons name="download" size={20} color={colors.text.inverse} />
+                <Text style={styles.viewDownloadsButtonText}>View Downloaded Books</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <Text style={styles.offlineSubMessage}>
+              Download books while online to read them offline later.
+            </Text>
+          )}
+        </View>
+
+        {/* Navigation Drawer */}
+        <NavigationDrawer
+          visible={drawerVisible}
+          currentRoute="Library"
+          onClose={() => setDrawerVisible(false)}
+        />
+      </SafeAreaView>
+    );
+  }
+
+  // When online but API fails
+  if (error && isOnline) {
+    return (
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => setDrawerVisible(true)}
+            style={styles.menuButton}
+          >
+            <Ionicons name="menu" size={28} color={colors.text.primary} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Library</Text>
+          <View style={styles.networkStatus} />
+        </View>
+
+        <View style={styles.centerContainer}>
+          <Ionicons name="alert-circle-outline" size={80} color={colors.error} />
+          <Text style={styles.errorText}>Failed to Load Library</Text>
+          <Text style={styles.errorSubtext}>
+            Unable to connect to the server. Please try again later.
+          </Text>
+        </View>
+
+        {/* Navigation Drawer */}
+        <NavigationDrawer
+          visible={drawerVisible}
+          currentRoute="Library"
+          onClose={() => setDrawerVisible(false)}
+        />
+      </SafeAreaView>
     );
   }
 
@@ -250,6 +338,49 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.base,
     color: colors.text.secondary,
     textAlign: 'center',
+  },
+  offlineContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  offlineTitle: {
+    fontSize: typography.sizes['2xl'],
+    fontWeight: typography.weights.bold,
+    color: colors.text.primary,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  offlineMessage: {
+    fontSize: typography.sizes.base,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+    lineHeight: 22,
+  },
+  offlineSubMessage: {
+    fontSize: typography.sizes.base,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    marginBottom: spacing.xl,
+    lineHeight: 22,
+  },
+  viewDownloadsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+    minWidth: 200,
+  },
+  viewDownloadsButtonText: {
+    fontSize: typography.sizes.base,
+    fontWeight: typography.weights.semibold,
+    color: colors.text.inverse,
   },
 });
 
